@@ -1,0 +1,22 @@
+http:
+  port: 9090
+  adminPort: 9001
+inputType: 2
+outputType: 1
+maxElementsInCombination: 2
+wc: 0.6
+ws: 0.2
+wa: 0.2
+
+# Logging settings.
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: INFO
+  
+  file:
+    enabled: true
+    currentLogFilename: ./logs/example.log
+    archivedLogFilenamePattern: ./logs/example-%d.log.gz
+    archivedFileCount: 5
+    timeZone: UTC
