@@ -125,7 +125,8 @@ public class Recommender2Resource {
 				inputType, outputType, maxOntologiesInSet, ontologyUris,
 				wCoverage, prefScore, synScore, multiTermScore, wDetail,
 				wSpecialization, wAcceptance, wPageviews, wUmls, wPubmed);
-		logger.info("First result: "+results.get(0).getOntologyAcronyms());
+		if (results.size()>0)
+			logger.info("First result: "+results.get(0).getOntologyAcronyms());
 		
 		// If the data are requested from a server in the same domain name than
 		// the Recommender service then it is not necessary to use JSONP (and
