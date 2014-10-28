@@ -14,7 +14,7 @@ The Recommender has been created using the [Dropwizard framework](http://dropwiz
 1. Generate the .jar file: `mvn package`
 2. Run the service: `java -jar target/recommender2_web_service-0.0.1-SNAPSHOT.jar server recommender2.yml`
 
-To check if the service is running correctly, you can execute the term for the input text "leukocyte" by navigating to the following url: http://localhost:9090/recommender2?text=leukocyte
+To check if the service is running correctly, you can execute it for the input text "leukocyte" by navigating to the following url: http://localhost:9090/recommender2?text=leukocyte
 
 ##Contact
 Marcos Martinez-Romero (<marcosmartinez@udc.es>)
