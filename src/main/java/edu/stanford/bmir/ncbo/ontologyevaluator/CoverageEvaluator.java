@@ -10,6 +10,7 @@ import edu.stanford.bmir.ncbo.annotator.AnnotatorAdapter;
 import edu.stanford.bmir.ncbo.annotator.to.AnnotationTO;
 import edu.stanford.bmir.ncbo.annotator.util.AnnotatorUtil;
 import edu.stanford.bmir.ncbo.ontologyevaluator.result.CoverageResultTO;
+import edu.stanford.bmir.ncbo.util.PropertiesManager;
 
 /**
  * Ontology coverage evaluator
@@ -20,7 +21,7 @@ import edu.stanford.bmir.ncbo.ontologyevaluator.result.CoverageResultTO;
 public class CoverageEvaluator {
 
 	private Double topScore = null;
-	
+
 	/**
 	 * @param input
 	 * @param inputType
@@ -51,8 +52,8 @@ public class CoverageEvaluator {
 			score += util.getAnnotationScore(annotation, prefScore, synScore,
 					multiTermScore);
 		}
-		
-		if (topScore==null)
+
+		if (topScore == null)
 			topScore = getTopCoverageScore(input, inputType, prefScore,
 					synScore, multiTermScore);
 
@@ -116,7 +117,7 @@ public class CoverageEvaluator {
 	}
 
 	// public static void main(String[] args) {
-	// String apiKey = "24e0ebf2-54e0-11e0-9d7b-005056aa3316";
+	// String apiKey = PropertiesManager.getProperty("apiKey");
 	// int maxCallsPerSecond = 10;
 	// AnnotatorAdapter a = new AnnotatorAdapter(apiKey, maxCallsPerSecond);
 	// // String text = "fc receptor complex is a complex";

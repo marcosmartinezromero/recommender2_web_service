@@ -236,28 +236,6 @@ public class AnnotatorAdapter {
 		return annotationsForOntologies;
 	}
 
-	/*** Test code ***/
-	// public static void main(String[] args) {
-	// String apiKey = "24e0ebf2-54e0-11e0-9d7b-005056aa3316";
-	// int maxCallsPerSecond = 10;
-	// String text = "fc receptor complex cancer";
-	// List<String> ontologyUris = new ArrayList<String>();
-	// //ontologyUris.add("http://data.bioontology.org/ontologies/NCIT");
-	// ontologyUris.add("http://data.bioontology.org/ontologies/GO");
-	// HashMap<String, List<AnnotationTO>> annotations =
-	// AnnotatorAdapter.getAnnotations(
-	// text, ontologyUris);
-	// for (Map.Entry entry : annotations.entrySet()) {
-	// for (AnnotationTO annotation : (List<AnnotationTO>) entry
-	// .getValue()) {
-	// System.out.println(annotation);
-	// }
-	// }
-	// // List<String> annotatedTerms = CommonOperations.getAnnotatedTerms(
-	// // text, annotations);
-	// // System.out.println(annotatedTerms);
-	// }
-
 	/*** ANNOTATOR OUTPUT DATA MODEL ***/
 	class AnnotatorData {
 		@SerializedName("annotatedClass")
@@ -377,17 +355,5 @@ public class AnnotatorAdapter {
 		}
 
 	}
-
-	/*** Test code ***/
-	 public static void main(String[] args) {
-	 // String input = ",brain    aaa, blood white cell, skull";
-	 String input = "white blood cell";
-	 HashMap<String, List<AnnotationTO>> annotations =
-	 getAnnotationsFromService(input, null);
-	 List<String> positions = AnnotatorAdapter.getKeywordPositions(input,
-	 ',');
-	 System.out.println(positions);
-	
-	 }
 
 }

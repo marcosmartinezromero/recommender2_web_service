@@ -114,7 +114,7 @@ public class Recommender2Facade {
 					prefScore, synScore, multiTermScore, wd, ws, wa, waPv,
 					waUmls, waPm);
 		}
-		// Combinedoutput
+		// Ontology sets output
 		else {
 			return getCombinedRankingJson(input, inputType,
 					maxElementsInCombination, ontologyUris, wc, prefScore,

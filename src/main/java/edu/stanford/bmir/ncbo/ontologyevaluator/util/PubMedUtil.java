@@ -126,12 +126,13 @@ public class PubMedUtil {
 		try {
 			String url = "http://www.ncbi.nlm.nih.gov/entrez/"
 					+ "eutils/esearch.fcgi?db=pubmed&term="
-					+ URLEncoder.encode("\""+text+"\"", "UTF-8") + "[All fields]";
+					+ URLEncoder.encode("\"" + text + "\"", "UTF-8")
+					+ "[All fields]";
 
 			Source source = new Source(new URL(url));
 			hits = new Integer(source.getAllElements("count").get(0)
 					.getContent().toString());
-System.out.println(hits);
+			System.out.println(hits);
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -191,15 +192,15 @@ System.out.println(hits);
 
 	/*** Test code ***/
 	public static void main(String[] args) {
-		 PubMedUtil.pubMedCitationsToFile();
-		
-//		int citations = PubMedUtil
-//				.getPubMedCitationsForOntology("http://bioportal.bioontology.org/ontologies/GO");
-//		System.out.println(citations);
-//		
-//		System.out.println(PubMedUtil.getOntologyNameForSearch(new
-//		OntologyTO("PMR",
-//		"Physical Medicine and Rehabilitation")));
+		PubMedUtil.pubMedCitationsToFile();
+
+		// int citations = PubMedUtil
+		// .getPubMedCitationsForOntology("http://bioportal.bioontology.org/ontologies/GO");
+		// System.out.println(citations);
+		//
+		// System.out.println(PubMedUtil.getOntologyNameForSearch(new
+		// OntologyTO("PMR",
+		// "Physical Medicine and Rehabilitation")));
 	}
 
 }
