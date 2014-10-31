@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
@@ -53,12 +54,17 @@ public class AnnotatorAdapter {
 	 */
 	public static HashMap<String, List<AnnotationTO>> getAnnotations(
 			String input, int inputType, List<String> ontologyUris) {
+		// NOTE: including the option
+		// "include=prefLabel,synonym,definition,properties" is necessary to
+		// perform the evaluation of detail of the ontology concepts but makes
+		// the call to the Annotator service considerably slower
+		String options = "&max_level=0&include_synonyms=true&include=prefLabel,synonym,definition,properties";
 		// If it is the first call to the service, or if it is a new call (and
 		// the input text has changed or the input type has changed) the
 		// annotations are stored into a static variable to improve performance
 		if ((input.compareTo(storedInput) != 0)
 				|| (inputType != storedInputType)) {
-			annotations = getAnnotationsFromService(input, null);
+			annotations = getAnnotationsFromService(input, null, options);
 			// If the input are keywords separated instead of plain text, it is
 			// necessary to filter the annotations obtained to keep just those
 			// of them that annotate whole keywords
@@ -80,7 +86,6 @@ public class AnnotatorAdapter {
 		else {
 			return annotations;
 		}
-
 	}
 
 	/**
@@ -181,10 +186,10 @@ public class AnnotatorAdapter {
 	 * @return A list of ontology uris with their corresponding annotations
 	 */
 	private static HashMap<String, List<AnnotationTO>> getAnnotationsFromService(
-			String text, List<String> ontologyUris) {
+			String text, List<String> ontologyUris, String options) {
 		String url = "";
 		String acronyms = "";
-		if ((ontologyUris != null) && (ontologyUris.size() > 0)) {			
+		if ((ontologyUris != null) && (ontologyUris.size() > 0)) {
 			acronyms = "&ontologies=";
 			for (String uri : ontologyUris) {
 				acronyms += OntologyUtil.getOntologyAcronymFromUri(uri) + ",";
@@ -193,7 +198,7 @@ public class AnnotatorAdapter {
 		}
 
 		try {
-			url = annotatorUrl + "?apikey=" + apiKey + "&max_level=0&include_synonyms=true&text="
+			url = annotatorUrl + "?apikey=" + apiKey + options + "&text="
 					+ URLEncoder.encode(text, "utf-8") + acronyms;
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
@@ -204,9 +209,8 @@ public class AnnotatorAdapter {
 		}.getType();
 		List<AnnotatorData> annotatorData = new Gson().fromJson(json,
 				collectionType);
-		HashMap<String, List<AnnotationTO>> annotationsForOntologies = 
-				new HashMap<String, List<AnnotationTO>>();
-		for (AnnotatorData data : annotatorData) {
+		HashMap<String, List<AnnotationTO>> annotationsForOntologies = new HashMap<String, List<AnnotationTO>>();
+		for (AnnotatorData data : annotatorData) {			
 			String ontologyUri = data.getAnnotatedClass().getLinks()
 					.getOntology();
 			List<AnnotationTO> annotations = null;
@@ -219,15 +223,19 @@ public class AnnotatorAdapter {
 				annotations = annotationsForOntologies.get(ontologyUri);
 			}
 			String conceptUri = data.getAnnotatedClass().getLinks().getUi();
-			
+			int numberOfDefinitions = data.getAnnotatedClass().getDefinitions()!=null ? data.getAnnotatedClass().getDefinitions().size() : 0;
+			int numberOfSynonyms = data.getAnnotatedClass().getSynonyms()!=null ? data.getAnnotatedClass().getSynonyms().size() : 0;
+			int numberOfProperties = data.getAnnotatedClass().getProperties()!=null ? data.getAnnotatedClass().getProperties().size() : 0;
+
 			// The annotations are stored
-			for (int i = 0; i < data.getAnnotations().size(); i++) {
+			for (int i = 0; i < data.getAnnotations().size(); i++) {				
 				AnnotationTO annotation = new AnnotationTO(
 						Integer.parseInt(data.getAnnotations().get(i).getFrom()),
 						Integer.parseInt(data.getAnnotations().get(i).getTo()),
 						data.getAnnotations().get(i).getMatchType(), data
 								.getAnnotations().get(i).getText(),
-						ontologyUri, conceptUri);
+						ontologyUri, conceptUri,
+						numberOfDefinitions, numberOfSynonyms, numberOfProperties);
 				annotations.add(annotation);
 			}
 			annotationsForOntologies.put(ontologyUri, annotations);
@@ -262,21 +270,40 @@ public class AnnotatorAdapter {
 	}
 
 	class AnnotatedClass {
-		@SerializedName("name")
-		private String name;
-		
-		@SerializedName("@id")
-		private String id;
+		@SerializedName("synonym")
+		private List<String> synonyms;
+
+		@SerializedName("definition")
+		private List<String> definitions;
+
+		@SerializedName("properties")
+		private HashMap<String, List<String>> properties;
 
 		@SerializedName("links")
 		private Links links;
 
-		public String getId() {
-			return id;
+		public List<String> getSynonyms() {
+			return synonyms;
 		}
 
-		public void setId(String id) {
-			this.id = id;
+		public void setSynonyms(List<String> synonyms) {
+			this.synonyms = synonyms;
+		}
+
+		public List<String> getDefinitions() {
+			return definitions;
+		}
+
+		public void setDefinitions(List<String> definitions) {
+			this.definitions = definitions;
+		}
+
+		public HashMap<String, List<String>> getProperties() {
+			return properties;
+		}
+
+		public void setProperties(HashMap<String, List<String>> properties) {
+			this.properties = properties;
 		}
 
 		public Links getLinks() {
@@ -287,23 +314,16 @@ public class AnnotatorAdapter {
 			this.links = links;
 		}
 
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
 
 	}
 
 	class Links {
 		@SerializedName("ontology")
 		private String ontology;
-		
+
 		@SerializedName("ui")
 		private String ui;
-		
+
 		@SerializedName("self")
 		private String self;
 
@@ -328,13 +348,13 @@ public class AnnotatorAdapter {
 	class Annotation {
 		@SerializedName("from")
 		private String from;
-		
+
 		@SerializedName("to")
 		private String to;
-		
+
 		@SerializedName("matchType")
 		private String matchType;
-		
+
 		@SerializedName("text")
 		private String text;
 
@@ -352,6 +372,16 @@ public class AnnotatorAdapter {
 
 		public String getText() {
 			return text;
+		}
+
+	}
+
+	public static void main(String args[]) {
+		HashMap<String, List<AnnotationTO>> annotations = AnnotatorAdapter
+				.getAnnotations("melanoma", 1, null);
+		for (Map.Entry<String, List<AnnotationTO>> entry : annotations
+				.entrySet()) {
+			System.out.println(entry.getValue());
 		}
 
 	}

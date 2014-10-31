@@ -39,15 +39,17 @@ public class Recommender2Resource {
 	private double wc;
 	private double ws;
 	private double wa;
+	private double wd;
 	
 	public Recommender2Resource(int inputType, int outputType,
-			int maxOntologiesInSet, double wc, double ws, double wa) {
+			int maxOntologiesInSet, double wc, double ws, double wa, double wd) {
 		this.inputType = inputType;
 		this.outputType = outputType;
 		this.maxOntologiesInSet = maxOntologiesInSet;
 		this.wc = wc;
 		this.ws = ws;
 		this.wa = wa;
+		this.wd = wd;
 	}
 
 	@GET
@@ -59,7 +61,7 @@ public class Recommender2Resource {
 			@QueryParam("outputType") Integer outputType,
 			@QueryParam("maxOntologiesInSet") Integer maxOntologiesInSet,
 			@QueryParam("wc") Double wc, @QueryParam("ws") Double ws,
-			@QueryParam("wa") Double wa, @Context HttpServletRequest request) throws IOException {
+			@QueryParam("wa") Double wa, @QueryParam("wd") Double wd, @Context HttpServletRequest request) throws IOException {
 		
 		Logger logger = LoggerFactory.getLogger("Recommender2Resource");
 		logger.info("\n\n----------------------------- NEW REQUEST --------------------------------");		
@@ -81,10 +83,13 @@ public class Recommender2Resource {
 			ws = this.ws;
 		if ((wa == null) || (wa < 0) || (wa > 1))
 			wa = this.wa;
-		if (wc + ws + wa > 1) {
+		if ((wd == null) || (wd < 0) || (wd > 1))
+			wd = this.wd;
+		if (wc + ws + wa + wd > 1) {
 			wc = this.wc;
 			ws = this.ws;
 			wa = this.wa;
+			wd = this.wd;
 		}		
 					
 		logger.info("Input type: " + inputType);
@@ -93,6 +98,7 @@ public class Recommender2Resource {
 		logger.info("wc= " + wc);
 		logger.info("ws= " + ws);
 		logger.info("wa= " + wa);
+		logger.info("wd= " + wd);
 		logger.info("Input text:\n"+text);
 		
 		// Coverage settings
@@ -115,18 +121,24 @@ public class Recommender2Resource {
 		double wPubmed = PropertiesManager.getPropertyDouble("wPubmed");
 		
 		// Detail of Knowledge settings
-		double wDetail = PropertiesManager.getPropertyDouble("wDetail");
+		//double wDetail = PropertiesManager.getPropertyDouble("wDetail");
+		double wDetail = wd;
+		int definitionsForMaxScore = PropertiesManager.getPropertyInt("definitionsForMaxScore");		
+		int synonymsForMaxScore = PropertiesManager.getPropertyInt("synonymsForMaxScore");
+		int propertiesForMaxScore = PropertiesManager.getPropertyInt("propertiesForMaxScore");
 
 		// Ontologies to evaluate. If the list is empty, all the ontologies in
 		// BioPortal will be evaluated
 		List<String> ontologyUris = new ArrayList<String>();
-				
-		List<RecommendationResultTO> results = Recommender2Facade.getRanking(text,
-				inputType, outputType, maxOntologiesInSet, ontologyUris,
-				wCoverage, prefScore, synScore, multiTermScore, wDetail,
-				wSpecialization, wAcceptance, wPageviews, wUmls, wPubmed);
-		if (results.size()>0)
-			logger.info("First result: "+results.get(0).getOntologyAcronyms());
+
+		List<RecommendationResultTO> results = Recommender2Facade.getRanking(
+				text, inputType, outputType, maxOntologiesInSet, ontologyUris,
+				wCoverage, prefScore, synScore, multiTermScore,
+				wSpecialization, wAcceptance, wPageviews, wUmls, wPubmed,
+				wDetail, definitionsForMaxScore, synonymsForMaxScore,
+				propertiesForMaxScore);
+		if (results.size() > 0)
+			logger.info("First result: " + results.get(0).getOntologyAcronyms());
 		
 		// If the data are requested from a server in the same domain name than
 		// the Recommender service then it is not necessary to use JSONP (and

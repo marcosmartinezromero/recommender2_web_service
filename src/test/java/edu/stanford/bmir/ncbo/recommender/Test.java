@@ -39,6 +39,9 @@ public class Test {
 
 		// Detail of Knowledge settings
 		double wDetail = PropertiesManager.getPropertyDouble("wDetail");
+		int definitionsForMaxScore = PropertiesManager.getPropertyInt("definitionsForMaxScore");		
+		int synonymsForMaxScore = PropertiesManager.getPropertyInt("synonymsForMaxScore");
+		int propertiesForMaxScore = PropertiesManager.getPropertyInt("propertiesForMaxScore");
 
 		/*** Input examples ***/
 		// String input = "Backpain, White blood cell, Carcinoma, Cavity of stomach, Ductal Carcinoma in Situ, Adjuvant chemotherapy, Axillary lymph node staging, Mastectomy, tamoxifen, serotonin reuptake inhibitors, Invasive Breast Cancer, hormone receptor positive breast cancer, ovarian ablation, premenopausal women, surgical management, biopsy of breast tumor, Fine needle aspiration, entinel lymph node, breast preservation, adjuvant radiation therapy, prechemotherapy, Inflammatory Breast Cancer, ovarian failure, Bone scan, lumpectomy, brain metastases, pericardial effusion, aromatase inhibitor, postmenopausal, Palliative care, Guidelines, Stage IV breast cancer disease, Trastuzumab, Breast MRI examination";
@@ -71,8 +74,9 @@ public class Test {
 
 		String rankingJson = Recommender2Facade.getRankingJson(input,
 				inputType, outputType, maxElementsInCombination, ontologyUris,
-				wCoverage, prefScore, synScore, multiTermScore, wDetail,
-				wSpecialization, wAcceptance, wPageviews, wUmls, wPubmed);
+				wCoverage, prefScore, synScore, multiTermScore,
+				wSpecialization, wAcceptance, wPageviews, wUmls, wPubmed, wDetail,
+				definitionsForMaxScore, synonymsForMaxScore, propertiesForMaxScore);
 
 		System.out.println("*** Single results ***");
 		System.out.println(rankingJson);

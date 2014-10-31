@@ -18,9 +18,14 @@ public class AnnotationTO {
 	private String text;
 	private String ontologyUri;
 	private String conceptUri;
-
+	// Information about the annotated class used for detail evaluation
+	private int numberOfDefinitions;
+	private int numberOfSynonyms;
+	private int numberOfProperties;
+	
 	public AnnotationTO(int from, int to, String matchType, String text,
-			String ontologyUri, String conceptUri) {
+			String ontologyUri, String conceptUri, int numberOfDefinitions,
+			int numberOfSynonyms, int numberOfProperties) {
 		super();
 		this.from = from;
 		this.to = to;
@@ -28,6 +33,9 @@ public class AnnotationTO {
 		this.text = text;
 		this.ontologyUri = ontologyUri;
 		this.conceptUri = conceptUri;
+		this.numberOfDefinitions = numberOfDefinitions;
+		this.numberOfSynonyms = numberOfSynonyms;
+		this.numberOfProperties = numberOfProperties;
 	}
 
 	public int getFrom() {
@@ -78,11 +86,38 @@ public class AnnotationTO {
 		this.conceptUri = conceptUri;
 	}
 
+	public int getNumberOfDefinitions() {
+		return numberOfDefinitions;
+	}
+
+	public void setNumberOfDefinitions(int numberOfDefinitions) {
+		this.numberOfDefinitions = numberOfDefinitions;
+	}
+
+	public int getNumberOfSynonyms() {
+		return numberOfSynonyms;
+	}
+
+	public void setNumberOfSynonyms(int numberOfSynonyms) {
+		this.numberOfSynonyms = numberOfSynonyms;
+	}
+
+	public int getNumberOfProperties() {
+		return numberOfProperties;
+	}
+
+	public void setNumberOfProperties(int numberOfProperties) {
+		this.numberOfProperties = numberOfProperties;
+	}
+
 	@Override
 	public String toString() {
 		return "AnnotationTO [from=" + from + ", to=" + to + ", matchType="
 				+ matchType + ", text=" + text + ", ontologyUri=" + ontologyUri
-				+ ", conceptUri=" + conceptUri + "]";
+				+ ", conceptUri=" + conceptUri + ", numberOfDefinitions="
+				+ numberOfDefinitions + ", numberOfSynonyms="
+				+ numberOfSynonyms + ", numberOfProperties="
+				+ numberOfProperties + "]";
 	}
 
 }

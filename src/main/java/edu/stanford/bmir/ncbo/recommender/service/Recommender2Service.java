@@ -32,6 +32,6 @@ public class Recommender2Service extends Service<Recommender2Configuration> {
 		    factory.enable(SerializationFeature.INDENT_OUTPUT);
 			environment.addResource(new Recommender2Resource(configuration.getInputType(),
 					configuration.getOutputType(), configuration.getMaxElementsInCombination(),
-					configuration.getWc(), configuration.getWs(), configuration.getWa()));
+					configuration.getWc(), configuration.getWs(), configuration.getWa(), configuration.getWd()));
 		}
 }

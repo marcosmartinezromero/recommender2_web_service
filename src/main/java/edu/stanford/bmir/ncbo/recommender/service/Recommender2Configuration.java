@@ -23,6 +23,7 @@ public class Recommender2Configuration extends Configuration {
 	private double wc;
 	private double ws;
 	private double wa;
+	private double wd;
 	
 	@JsonProperty
 	public String getInputText() {
@@ -92,6 +93,16 @@ public class Recommender2Configuration extends Configuration {
 	@JsonProperty
 	public void setWa(double wa) {
 		this.wa = wa;
+	}
+	
+	@JsonProperty
+	public double getWd() {
+		return wd;
+	}
+
+	@JsonProperty
+	public void setWd(double wd) {
+		this.wd = wd;
 	}
 
 }

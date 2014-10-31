@@ -8,12 +8,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.bioontology.ontologies</groupId>
-			<artifactId>ontologies-api-java-client</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
 			<groupId>com.yammer.dropwizard</groupId>
 			<artifactId>dropwizard-core</artifactId>
 			<version>${dropwizard.version}</version>

@@ -82,20 +82,25 @@ public class Recommender2Facade {
 	public static List<RecommendationResultTO> getRanking(String input,
 			int inputType, int outputType, int maxElementsInCombination,
 			List<String> ontologyUris, double wc, double prefScore,
-			double synScore, double multiTermScore, double wd, double ws,
-			double wa, double waPv, double waUmls, double waPm) {
+			double synScore, double multiTermScore, double ws, double wa,
+			double waPv, double waUmls, double waPm, double wd,
+			int definitionsForMaxScore, int synonymsForMaxScore,
+			int propertiesForMaxScore) {
 
 		// Single output
 		if (outputType == 1) {
 			return getSingleRanking(input, inputType, ontologyUris, wc,
-					prefScore, synScore, multiTermScore, wd, ws, wa, waPv,
-					waUmls, waPm);
+					prefScore, synScore, multiTermScore, ws, wa, waPv, waUmls,
+					waPm, wd, definitionsForMaxScore, synonymsForMaxScore,
+					propertiesForMaxScore);
 		}
 		// Combined output
 		else {
 			return getCombinedRanking(input, inputType,
 					maxElementsInCombination, ontologyUris, wc, prefScore,
-					synScore, multiTermScore, wd, ws, wa, waPv, waUmls, waPm);
+					synScore, multiTermScore, ws, wa, waPv, waUmls, waPm, wd,
+					definitionsForMaxScore, synonymsForMaxScore,
+					propertiesForMaxScore);
 		}
 	}
 
@@ -105,20 +110,25 @@ public class Recommender2Facade {
 	public static String getRankingJson(String input, int inputType,
 			int outputType, int maxElementsInCombination,
 			List<String> ontologyUris, double wc, double prefScore,
-			double synScore, double multiTermScore, double wd, double ws,
-			double wa, double waPv, double waUmls, double waPm) {
+			double synScore, double multiTermScore, double ws, double wa,
+			double waPv, double waUmls, double waPm, double wd,
+			int definitionsForMaxScore, int synonymsForMaxScore,
+			int propertiesForMaxScore) {
 		// Single output
 		if (outputType == 1) {
 
 			return getSingleRankingJson(input, inputType, ontologyUris, wc,
-					prefScore, synScore, multiTermScore, wd, ws, wa, waPv,
-					waUmls, waPm);
+					prefScore, synScore, multiTermScore, ws, wa, waPv, waUmls,
+					waPm, wd, definitionsForMaxScore, synonymsForMaxScore,
+					propertiesForMaxScore);
 		}
 		// Ontology sets output
 		else {
 			return getCombinedRankingJson(input, inputType,
 					maxElementsInCombination, ontologyUris, wc, prefScore,
-					synScore, multiTermScore, wd, ws, wa, waPv, waUmls, waPm);
+					synScore, multiTermScore, ws, wa, waPv, waUmls, waPm, wd,
+					definitionsForMaxScore, synonymsForMaxScore,
+					propertiesForMaxScore);
 		}
 	}
 
@@ -129,19 +139,19 @@ public class Recommender2Facade {
 	private static List<RecommendationResultTO> getSingleRanking(String input,
 			int inputType, List<String> ontologyUris, double wc,
 			double prefScore, double synScore, double multiTermScore,
-			double wd, double ws, double wa, double waPv, double waUmls,
-			double waPm) {
+			double ws, double wa, double waPv, double waUmls, double waPm,
+			double wd, int definitionsForMaxScore, int synonymsForMaxScore,
+			int propertiesForMaxScore) {
 		Logger logger = LoggerFactory.getLogger("Recommender2Facade");
 		CoverageEvaluator coverageEvaluator = new CoverageEvaluator();
 		AcceptanceEvaluator acceptanceEvaluator = new AcceptanceEvaluator();
 		List<RecommendationResultTO> results = new ArrayList<RecommendationResultTO>();
-		
+
 		HashMap<String, List<AnnotationTO>> annotations = AnnotatorAdapter
 				.getAnnotations(input, inputType, ontologyUris);
 		// Only the ontologies that have annotations will be evaluated
 		List<String> selectedUris = Collections.list(Collections
 				.enumeration(annotations.keySet()));
-		
 
 		for (String ontologyUri : selectedUris) {
 			List<ScoreTO> scores = new ArrayList<ScoreTO>();
@@ -175,13 +185,15 @@ public class Recommender2Facade {
 			// }
 
 			// if (wd > 0) {
-			// /*** Detail evaluation ***/
-			// detailResult = DetailEvaluator
-			// .evaluate(coverageResult);
-			// scores.add(new ScoreTO(detailResult.getScore(), wd));
+			/*** Knowledge detail evaluation ***/
+			detailResult = DetailEvaluator.evaluate(coverageResult,
+					definitionsForMaxScore, synonymsForMaxScore,
+					propertiesForMaxScore);
+			scores.add(new ScoreTO(detailResult.getScore(), wd));
 			// }
 
 			/*** Final result ***/
+			// System.out.println(scores);
 			double aggregatedScore = Aggregator.aggregateScores(scores);
 
 			List<String> ontUris = new ArrayList<String>();
@@ -215,12 +227,16 @@ public class Recommender2Facade {
 	 */
 	private static String getSingleRankingJson(String input, int inputType,
 			List<String> ontologyUris, double wc, double prefScore,
-			double synScore, double multiTermScore, double wd, double ws,
-			double wa, double waPv, double waUmls, double waPm) {
+			double synScore, double multiTermScore, double ws, double wa,
+			double waPv, double waUmls, double waPm, double wd,
+			int definitionsForMaxScore, int synonymsForMaxScore,
+			int propertiesForMaxScore) {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		List<RecommendationResultTO> ranking = getSingleRanking(input,
 				inputType, ontologyUris, wc, prefScore, synScore,
-				multiTermScore, wd, ws, wa, waPv, waUmls, waPm);
+				multiTermScore, ws, wa, waPv, waUmls, waPm, wd,
+				definitionsForMaxScore, synonymsForMaxScore,
+				propertiesForMaxScore);
 		// Converts the Java object to JSON format and stores it as a JSON
 		// formatted string
 		String json = gson.toJson(ranking);
@@ -235,14 +251,18 @@ public class Recommender2Facade {
 	private static List<RecommendationResultTO> getCombinedRanking(
 			String input, int inputType, int maxElementsInCombination,
 			List<String> ontologyUris, double wc, double prefScore,
-			double synScore, double multiTermScore, double wd, double ws,
-			double wa, double waPv, double waUmls, double waPm) {
+			double synScore, double multiTermScore, double ws, double wa,
+			double waPv, double waUmls, double waPm, double wd,
+			int definitionsForMaxScore, int synonymsForMaxScore,
+			int propertiesForMaxScore) {
 		List<RecommendationResultTO> results = new ArrayList<RecommendationResultTO>();
 		CoverageEvaluator coverageEvaluator = new CoverageEvaluator();
 
 		List<RecommendationResultTO> singleRanking = getSingleRanking(input,
 				inputType, ontologyUris, wc, prefScore, synScore,
-				multiTermScore, wd, ws, wa, waPv, waUmls, waPm);
+				multiTermScore, ws, wa, waPv, waUmls, waPm, wd,
+				definitionsForMaxScore, synonymsForMaxScore,
+				propertiesForMaxScore);
 
 		// Store the single results in a map<uri,result> to access them easily
 		HashMap<String, RecommendationResultTO> singleResults = new HashMap<String, RecommendationResultTO>();
@@ -374,20 +394,27 @@ public class Recommender2Facade {
 			// System.out.println("Specialization evaluation: " + timeSpec +
 			// " ms");
 			// System.out.println("Acceptance evaluation: " + timeAcc + " ms");
-			
+
 			/*** Combined Detail of Knowledge evaluation ***/
-			// double combinedDetailScore = 0;
-			// for (String uri : uris) {
-			// DetailResultTO detailResult = DetailEvaluator
-			// .evaluate(input, inputType, uri);
-			// combinedSpecScore += (individualCoverageScores.get(uri) /
-			// totalScore)
-			// * specializationResult.getScore();
-			// combinedNormSpecScore += (individualCoverageScores.get(uri) /
-			// totalScore)
-			// * specializationResult.getNormalizedScore();
-			// }
-			DetailResultTO combinedDetailResult = new DetailResultTO(0, 0, 0, 0);
+			double combinedDetailScore = 0;
+			double combinedDefinitionsScore = 0;
+			double combinedSynonymsScore = 0;
+			double combinedPropertiesScore = 0;
+			for (String uri : uris) {
+				DetailResultTO detailResult = singleResults.get(uri)
+						.getDetailResult();
+				combinedDetailScore += (individualCoverageScores.get(uri) / totalScore)
+						* detailResult.getScore();
+				combinedDefinitionsScore += (individualCoverageScores.get(uri) / totalScore)
+						* detailResult.getDefinitionsScore();
+				combinedSynonymsScore += (individualCoverageScores.get(uri) / totalScore)
+						* detailResult.getSynonymsScore();
+				combinedPropertiesScore += (individualCoverageScores.get(uri) / totalScore)
+						* detailResult.getPropertiesScore();
+			}
+			DetailResultTO combinedDetailResult = new DetailResultTO(
+					combinedDetailScore, combinedDefinitionsScore,
+					combinedSynonymsScore, combinedPropertiesScore);
 
 			List<String> ontologyUrisBioPortal = new ArrayList<String>();
 			List<String> ontologyNames = new ArrayList<String>();
@@ -405,11 +432,11 @@ public class Recommender2Facade {
 
 			/*** Final result ***/
 			List<ScoreTO> scores = new ArrayList<ScoreTO>();
-			scores.add(new ScoreTO(combinedCoverageResult.getNormalizedScore(),
-					wc));
+			scores.add(new ScoreTO(combinedCoverageResult.getNormalizedScore(), wc));
 			scores.add(new ScoreTO(combinedSpecializationResult
 					.getNormalizedScore(), ws));
 			scores.add(new ScoreTO(combinedAcceptanceResult.getScore(), wa));
+			scores.add(new ScoreTO(combinedDetailResult.getScore(), wd));
 			double aggregatedScore = Aggregator.aggregateScores(scores);
 
 			RecommendationResultTO result = new RecommendationResultTO(uris,
@@ -448,14 +475,16 @@ public class Recommender2Facade {
 	private static String getCombinedRankingJson(String input, int inputType,
 			int maxElementsInCombination, List<String> ontologyUris, double wc,
 			double prefScore, double synScore, double multiTermScore,
-			double wr, double ws, double wa, double waPv, double waUmls,
-			double waPm) {
+			double ws, double wa, double waPv, double waUmls, double waPm,
+			double wd, int definitionsForMaxScore, int synonymsForMaxScore,
+			int propertiesForMaxScore) {
 
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
 		List<RecommendationResultTO> ranking = getCombinedRanking(input,
 				inputType, maxElementsInCombination, ontologyUris, wc,
-				prefScore, synScore, multiTermScore, wr, ws, wa, waPv, waUmls,
-				waPm);
+				prefScore, synScore, multiTermScore, ws, wa, waPv, waUmls,
+				waPm, wd, definitionsForMaxScore, synonymsForMaxScore,
+				propertiesForMaxScore);
 
 		// Converts the Java object to JSON format and stores it as a JSON
 		// formatted string
