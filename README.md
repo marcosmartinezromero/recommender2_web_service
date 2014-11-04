@@ -6,7 +6,7 @@ The Ontology Recommender service suggests the best biomedical ontologies for a s
 A web interface for the Recommender is available [here](https://github.com/marcosmartinezromero/recommender2_web_ui).
 
 ##Version
-This software constitutes a new version of the [NCBO Ontology Recommender](http://bioportal.bioontology.org/recommender), which has been re-developed from scratch. The recommendation algorithm has been redesigned to provide better results in terms of the coverage of the input data and to include additional ontology evaluation criteria. The output has also been changed to provide a more clear explanation about the recommendation results.
+This software constitutes a new version of the [NCBO Ontology Recommender](http://bioportal.bioontology.org/recommender). The recommendation algorithm has been redesigned to provide better results in terms of the coverage of the input data and to include additional ontology evaluation criteria. The output has also been changed to provide a more clear explanation about the recommendation results.
 
 ##Usage
 The Recommender has been created using the [Dropwizard framework](http://dropwizard.io/), which makes it easy to build production-ready RESTful web services. Follow these steps to  execute the service:
