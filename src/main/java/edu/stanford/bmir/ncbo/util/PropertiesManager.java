@@ -14,12 +14,17 @@ import java.util.Properties;
  */
 public class PropertiesManager {
 	private static String configFile = "src/main/config/config.properties";
+	private static String apikeyFile = "src/main/config/apikey";
 	private static Properties properties;
+	private static String apikey = null;
 
 	static {
 		properties = new Properties();
+		Properties propertiesApikey = new Properties();
 		try {
 			properties.load(new FileInputStream(configFile));
+			propertiesApikey.load(new FileInputStream(apikeyFile));
+			apikey = propertiesApikey.getProperty("apikey");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -29,6 +34,10 @@ public class PropertiesManager {
 
 	public static String getProperty(String propertyName) {
 		return properties.getProperty(propertyName);
+	}
+	
+	public static String getApikey() {
+		return apikey;
 	}
 	
 	public static double getPropertyDouble(String propertyName) {
@@ -48,7 +57,7 @@ public class PropertiesManager {
 	
 	/*** Test code ***/
 	public static void main(String[] args) {
-		System.out.println(PropertiesManager.getProperty("apiKey"));
+		System.out.println(PropertiesManager.getApikey());
 		System.out.println(PropertiesManager.getPropertyDouble("wCoverage"));
 	}	
 }
