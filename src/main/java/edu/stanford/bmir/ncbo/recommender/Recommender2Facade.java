@@ -142,7 +142,7 @@ public class Recommender2Facade {
 			double ws, double wa, double waPv, double waUmls, double waPm,
 			double wd, int definitionsForMaxScore, int synonymsForMaxScore,
 			int propertiesForMaxScore) {
-		Logger logger = LoggerFactory.getLogger("Recommender2Facade");
+		//Logger logger = LoggerFactory.getLogger("Recommender2Facade");
 		CoverageEvaluator coverageEvaluator = new CoverageEvaluator();
 		AcceptanceEvaluator acceptanceEvaluator = new AcceptanceEvaluator();
 		List<RecommendationResultTO> results = new ArrayList<RecommendationResultTO>();
