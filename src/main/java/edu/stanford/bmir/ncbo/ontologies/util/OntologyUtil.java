@@ -26,7 +26,7 @@ public class OntologyUtil {
 		ontologyBaseUrl = PropertiesManager.getProperty("ontologyBaseUrl");
 		ontologyBaseBioPortalUrl = PropertiesManager
 				.getProperty("ontologyBaseBioPortalUrl");
-		apiKey = PropertiesManager.getProperty("apiKey");
+		apiKey = PropertiesManager.getApikey();
 		maxCallsPerSecond = Integer.parseInt(PropertiesManager
 				.getProperty("maxCallsPerSecond"));
 	}

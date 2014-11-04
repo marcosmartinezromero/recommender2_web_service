@@ -27,7 +27,7 @@ public class OntologyMetricsUtil {
 
 	static {
 		apiBaseUrl = PropertiesManager.getProperty("apiBaseUrl");
-		apiKey = PropertiesManager.getProperty("apiKey");
+		apiKey = PropertiesManager.getApikey();
 		maxCallsPerSecond = Integer.parseInt(PropertiesManager
 				.getProperty("maxCallsPerSecond"));
 		// Metrics initialization

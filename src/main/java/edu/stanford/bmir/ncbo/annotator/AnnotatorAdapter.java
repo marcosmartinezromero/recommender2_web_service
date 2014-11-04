@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
@@ -35,7 +34,7 @@ public class AnnotatorAdapter {
 	public static HashMap<String, List<AnnotationTO>> annotations = null;
 
 	static {
-		apiKey = PropertiesManager.getProperty("apiKey");
+		apiKey = PropertiesManager.getApikey();
 		maxCallsPerSecond = Integer.parseInt(PropertiesManager
 				.getProperty("maxCallsPerSecond"));
 	}
