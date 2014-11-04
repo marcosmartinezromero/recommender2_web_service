@@ -37,7 +37,7 @@ public class MathUtil {
 	 * @param orderedValues
 	 * @return Deciles for the array of ordered values
 	 */
-	private static double[] getDeciles(double orderedValues[]) {
+	public static double[] getDeciles(double orderedValues[]) {
 		Percentile p = new Percentile();
 		// Calculation of cut points using deciles 1 to 9 (percentiles 10 to 90)
 		double[] deciles = new double[9];
