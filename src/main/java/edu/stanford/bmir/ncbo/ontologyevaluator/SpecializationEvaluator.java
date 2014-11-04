@@ -8,9 +8,7 @@ import edu.stanford.bmir.ncbo.annotator.AnnotatorAdapter;
 import edu.stanford.bmir.ncbo.annotator.to.AnnotationTO;
 import edu.stanford.bmir.ncbo.ontologies.util.OntologyMetricsUtil;
 import edu.stanford.bmir.ncbo.ontologies.util.to.OntologyMetricsTO;
-import edu.stanford.bmir.ncbo.ontologyevaluator.result.CoverageResultTO;
 import edu.stanford.bmir.ncbo.ontologyevaluator.result.SpecializationResultTO;
-import edu.stanford.bmir.ncbo.ontologyevaluator.util.MathUtil;
 import edu.stanford.bmir.ncbo.recommender.util.NormUtil;
 
 /**

@@ -2,10 +2,9 @@ package edu.stanford.bmir.ncbo.ontologyevaluator;
 
 import java.util.List;
 
+import edu.stanford.bmir.ncbo.annotator.to.AnnotationTO;
 import edu.stanford.bmir.ncbo.ontologyevaluator.result.CoverageResultTO;
 import edu.stanford.bmir.ncbo.ontologyevaluator.result.DetailResultTO;
-import edu.stanford.bmir.ncbo.util.PropertiesManager;
-import edu.stanford.bmir.ncbo.annotator.to.AnnotationTO;
 
 /**
  * Evaluator of the detail of the knowledge provided by the ontology for the
