@@ -10,7 +10,6 @@ import edu.stanford.bmir.ncbo.annotator.AnnotatorAdapter;
 import edu.stanford.bmir.ncbo.annotator.to.AnnotationTO;
 import edu.stanford.bmir.ncbo.annotator.util.AnnotatorUtil;
 import edu.stanford.bmir.ncbo.ontologyevaluator.result.CoverageResultTO;
-import edu.stanford.bmir.ncbo.util.PropertiesManager;
 
 /**
  * Ontology coverage evaluator
@@ -116,20 +115,4 @@ public class CoverageEvaluator {
 		return topScore;
 	}
 
-	// public static void main(String[] args) {
-	// String apiKey = PropertiesManager.getProperty("apiKey");
-	// int maxCallsPerSecond = 10;
-	// AnnotatorAdapter a = new AnnotatorAdapter(apiKey, maxCallsPerSecond);
-	// // String text = "fc receptor complex is a complex";
-	// // String text = "white blood cell";
-	// String text = "colorectal cancer";
-	// List<String> ontologyUris = new ArrayList<String>();
-	// ontologyUris.add("http://data.bioontology.org/ontologies/RADLEX");
-	// HashMap<String, List<AnnotationTO>> annotations = a.getAnnotations(
-	// text, ontologyUris);
-	// CoverageEvaluator ev = new CoverageEvaluator();
-	// ev.evaluate(text, ontologyUris.get(0),
-	// annotations.get(ontologyUris.get(0)), 10, 7, 2);
-	//
-	// }
 }
