@@ -1,9 +1,12 @@
 package edu.stanford.bmir.ncbo.recommender;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +26,7 @@ import edu.stanford.bmir.ncbo.ontologyevaluator.result.SpecializationResultTO;
 import edu.stanford.bmir.ncbo.ontologyevaluator.scores.Aggregator;
 import edu.stanford.bmir.ncbo.ontologyevaluator.scores.ScoreTO;
 import edu.stanford.bmir.ncbo.recommender.result.RecommendationResultTO;
+import edu.stanford.bmir.ncbo.recommender.util.NormUtil;
 import edu.stanford.bmir.ncbo.recommender.util.RecommenderUtil;
 import edu.stanford.bmir.ncbo.util.CombinatoricalOperations;
 
@@ -86,6 +90,25 @@ public class Recommender2Facade {
 			double waPv, double waUmls, double waPm, double wd,
 			int definitionsForMaxScore, int synonymsForMaxScore,
 			int propertiesForMaxScore) {
+		
+		// Weights normalization to ensure that wc+ws+wa+wd=1
+		logger.info("Weights normalization: ");
+		double sumWeights = wc + wa + wd + ws;
+		if (sumWeights == 1) {
+			logger.info("The weights are already normalized.");
+		}
+		else {
+			NormUtil normUtil = new NormUtil(sumWeights, 0, 1, 0);
+			wc = normUtil.normalize(wc);
+			ws = normUtil.normalize(ws);
+			wa = normUtil.normalize(wa);
+			wd = normUtil.normalize(wd);
+			DecimalFormat df = new DecimalFormat("##.##", DecimalFormatSymbols.getInstance(Locale.US));		
+			logger.info("Normalized wc = " + df.format(wc));			
+			logger.info("Normalized wa = " + df.format(wa));
+			logger.info("Normalized wd = " + df.format(wd));
+			logger.info("Normalized ws = " + df.format(ws));
+		}
 
 		// Single output
 		if (outputType == 1) {

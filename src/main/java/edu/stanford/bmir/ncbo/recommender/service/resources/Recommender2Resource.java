@@ -39,7 +39,7 @@ public class Recommender2Resource {
 	private double ws;
 	private double wa;
 	private double wd;
-	
+
 	public Recommender2Resource(int inputType, int outputType,
 			int maxOntologiesInSet, double wc, double ws, double wa, double wd) {
 		this.inputType = inputType;
@@ -52,79 +52,82 @@ public class Recommender2Resource {
 	}
 
 	@GET
-	@Timed	
-	public Object getRecommendations(
-			@QueryParam("callback") String callback,
+	@Timed
+	public Object getRecommendations(@QueryParam("callback") String callback,
 			@QueryParam("text") String text,
-			@QueryParam("inputType") Integer inputType, 
+			@QueryParam("inputType") Integer inputType,
 			@QueryParam("outputType") Integer outputType,
 			@QueryParam("maxOntologiesInSet") Integer maxOntologiesInSet,
 			@QueryParam("wc") Double wc, @QueryParam("ws") Double ws,
-			@QueryParam("wa") Double wa, @QueryParam("wd") Double wd, @Context HttpServletRequest request) throws IOException {
-		
+			@QueryParam("wa") Double wa, @QueryParam("wd") Double wd,
+			@Context HttpServletRequest request) throws IOException {
+
 		Logger logger = LoggerFactory.getLogger("Recommender2Resource");
-		logger.info("\n\n----------------------------- NEW REQUEST --------------------------------");		
+		logger.info("\n\n----------------------------- NEW REQUEST --------------------------------");
 		logger.info("IP: " + request.getRemoteAddr());
-		// If the client did not provide an input text a HTTP ERROR 400 is returned
-		if ((text==null)||(text.trim().length()==0)) {
+		// If the client did not provide an input text a HTTP ERROR 400 is
+		// returned
+		if ((text == null) || (text.trim().length() == 0)) {
 			logger.error("Bad request: no input text provided");
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);
 		}
-		if (inputType==null)
+		if (inputType == null)
 			inputType = this.inputType;
-		if (outputType==null)
+		if (outputType == null)
 			outputType = this.outputType;
-		if ((maxOntologiesInSet==null)||(maxOntologiesInSet<2)||(maxOntologiesInSet>4))
-			maxOntologiesInSet=this.maxOntologiesInSet;
-		if ((wc==null)||(wc<0)||(wc>1))
-			wc=this.wc;
-		if ((ws == null) || (ws < 0) || (ws > 1))
-			ws = this.ws;
-		if ((wa == null) || (wa < 0) || (wa > 1))
-			wa = this.wa;
-		if ((wd == null) || (wd < 0) || (wd > 1))
-			wd = this.wd;
-		if (wc + ws + wa + wd > 1) {
+		if ((maxOntologiesInSet == null) || (maxOntologiesInSet < 2)
+				|| (maxOntologiesInSet > 4))
+			maxOntologiesInSet = this.maxOntologiesInSet;
+
+		logger.info("Input text:\n" + text);
+
+		if (((wc == null) || (wc < 0)) || ((ws == null) || (ws < 0))
+				|| ((wa == null) || (wa < 0)) || ((wd == null) || (wd < 0))) {
 			wc = this.wc;
-			ws = this.ws;
 			wa = this.wa;
 			wd = this.wd;
-		}		
-					
+			ws = this.ws;
+			logger.info("Some weights are null or lower than 0. Default values have been used");
+		}
+
 		logger.info("Input type: " + inputType);
 		logger.info("Output type: " + outputType);
 		logger.info("MaxOntologiesInSet: " + maxOntologiesInSet);
-		logger.info("wc= " + wc);
-		logger.info("ws= " + ws);
-		logger.info("wa= " + wa);
-		logger.info("wd= " + wd);
-		logger.info("Input text:\n"+text);
-		
+		logger.info("wc = " + wc);
+		logger.info("wa = " + wa);
+		logger.info("wd = " + wd);
+		logger.info("ws = " + ws);
+
 		// Coverage settings
-		//double wCoverage = PropertiesManager.getPropertyDouble("wCoverage");
+		// double wCoverage = PropertiesManager.getPropertyDouble("wCoverage");
 		double wCoverage = wc;
 		double prefScore = PropertiesManager.getPropertyDouble("prefScore");
 		double synScore = PropertiesManager.getPropertyDouble("synScore");
 		double multiTermScore = PropertiesManager
-				.getPropertyDouble("multiTermScore");		
-		
+				.getPropertyDouble("multiTermScore");
+
 		// Specialization settings
-		//double wSpecialization = PropertiesManager.getPropertyDouble("wSpecialization");
+		// double wSpecialization =
+		// PropertiesManager.getPropertyDouble("wSpecialization");
 		double wSpecialization = ws;
-		
+
 		// Acceptance settings
-		//double wAcceptance = PropertiesManager.getPropertyDouble("wAcceptance");
+		// double wAcceptance =
+		// PropertiesManager.getPropertyDouble("wAcceptance");
 		double wAcceptance = wa;
 		double wPageviews = PropertiesManager.getPropertyDouble("wPageviews");
 		double wUmls = PropertiesManager.getPropertyDouble("wUmls");
 		double wPubmed = PropertiesManager.getPropertyDouble("wPubmed");
-		
+
 		// Detail of Knowledge settings
-		//double wDetail = PropertiesManager.getPropertyDouble("wDetail");
+		// double wDetail = PropertiesManager.getPropertyDouble("wDetail");
 		double wDetail = wd;
-		int definitionsForMaxScore = PropertiesManager.getPropertyInt("definitionsForMaxScore");		
-		int synonymsForMaxScore = PropertiesManager.getPropertyInt("synonymsForMaxScore");
-		int propertiesForMaxScore = PropertiesManager.getPropertyInt("propertiesForMaxScore");
+		int definitionsForMaxScore = PropertiesManager
+				.getPropertyInt("definitionsForMaxScore");
+		int synonymsForMaxScore = PropertiesManager
+				.getPropertyInt("synonymsForMaxScore");
+		int propertiesForMaxScore = PropertiesManager
+				.getPropertyInt("propertiesForMaxScore");
 
 		// Ontologies to evaluate. If the list is empty, all the ontologies in
 		// BioPortal will be evaluated
@@ -138,7 +141,7 @@ public class Recommender2Resource {
 				propertiesForMaxScore);
 		if (results.size() > 0)
 			logger.info("First result: " + results.get(0).getOntologyAcronyms());
-		
+
 		// If the data are requested from a server in the same domain name than
 		// the Recommender service then it is not necessary to use JSONP (and
 		// the callback parameter)
@@ -146,6 +149,6 @@ public class Recommender2Resource {
 			return new JSONPObject(callback, new Output(results));
 		else
 			return new Output(results);
-		
+
 	}
 }

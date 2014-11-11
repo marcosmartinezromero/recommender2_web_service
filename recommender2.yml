@@ -5,9 +5,9 @@ inputType: 2
 outputType: 1
 maxElementsInCombination: 3
 wc: 0.5
-ws: 0.15
 wa: 0.2
-wd: 0.15
+wd: 0.2
+ws: 0.1
 
 # Logging settings.
 logging:
